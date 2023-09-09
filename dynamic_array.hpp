@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <memory>
 #include <format>
+#include <iostream>
 
 /*
  * If uncommenting, uncomment at the EOF!!!
@@ -36,9 +37,9 @@ namespace dvm {
          * <b>Call before adding elements</b>
          */
         void _try_grow() {
-            if (m_size - 1 < m_last_index)
+            if (m_size - 1 >= m_last_index)
                 return;
-            
+
             _resize_to(m_size + GROW_SIZE);
         }
 
@@ -61,10 +62,10 @@ namespace dvm {
          */
         void _resize_to(size_t size) {
             m_size = size;
-            auto old_array = std::move(m_array);
-            auto new_array = _create_array();
+            auto old_array = &m_array;
+            auto new_array = _create_array(size);
 
-            _copy(old_array, new_array);
+            _copy(*old_array, new_array);
 
             m_array = std::move(new_array);
         }
@@ -102,7 +103,7 @@ namespace dvm {
          * @param new_array unique pointer of the <b>new</b> array
          */
         void _copy(std::unique_ptr<std::shared_ptr<T>[]>& old_array, std::unique_ptr<std::shared_ptr<T>[]>& new_array) {
-            for (size_t i = 0; i < m_size; i++)
+            for (size_t i = 0; i < m_last_index; i++)
                 new_array[i] = old_array[i];
         }
 
@@ -206,7 +207,12 @@ namespace dvm {
          * Removes last element
          */
         [[maybe_unused]] void pop_back() {
-            m_array[m_last_index--] = nullptr;
+            m_array[m_last_index] = std::shared_ptr<T>(nullptr);
+
+            if (m_last_index == 0)
+                return;
+
+            m_last_index--;
             _try_shrink();
         }
 
