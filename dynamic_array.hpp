@@ -1,72 +1,115 @@
+//
+// Created by Divium on 08/09/2023.
+//
+
 #include <stdexcept>
+#include <memory>
 #include <format>
 
-class DynamicArray {
-private:
-    static const size_t INITIAL_SIZE = 5;
-    static const size_t GROW_SIZE = 5;
-    static const size_t SHRINK_SIZE = 5;
-    static const size_t SHRINK_THRESHOLD = 5;
-    
-    size_t size;
-    short* array;
+namespace dvm {
+    /**
+        * @brief Dynamic array implementation using smart pointers
+    */
+    template<class T> class DynamicArray {
+    private:
+        static const size_t INITIAL_SIZE = 5;
+        static const size_t GROW_SIZE = 5;
+        static const size_t SHRINK_SIZE = 5;
+        static const size_t SHRINK_THRESHOLD = 5;
 
-    size_t index;
+        size_t m_last_index;
+        size_t m_size;
+        std::unique_ptr<std::shared_ptr<T>[]> m_array;
 
-    void _grow(size_t growBy) {
-        size += growBy;
-        short* oldArray = array;
-        short* newArray = new short[size];
+        /**
+         * Grows array
+         * @param grow_by How much to grow
+         */
+        void _grow(size_t grow_by) {
+            m_size += grow_by;
+            auto old_array = std::move(m_array);
+            auto new_array = _create_array(m_size);
 
-        __copy(oldArray, newArray);
-        __delete(oldArray);
+            _copy(old_array, new_array);
 
-        array = newArray;
-    }
+            m_array = std::move(new_array);
+        }
 
-    void _shrink() {
-        
-    }
 
-    void __copy(short* oldArray, short* newArray) {
-        for (size_t i = 0; i < size; i++)
-            newArray[i] = oldArray[i];
-    }
+        void _shrink() {
 
-    void __delete(short* array) {
-        delete [] array;
-    }
+        }
 
-public:
-    DynamicArray(size_t size = INITIAL_SIZE) {
-        this->size = INITIAL_SIZE;
-        index = 0;
-        array = new short[size];
-    }
+        /**
+         * Creates array of shared pointers wrapped into unique pointer
+         * @param size Real size of the array
+         * @return unique pointer to created array
+         */
+        inline std::unique_ptr<std::shared_ptr<T>[]> _create_array(size_t size) {
+            return std::unique_ptr<std::shared_ptr<T>[]>(new std::shared_ptr<T>[size]);
+        }
 
-    ~DynamicArray() {
-        delete[] array;
-    }
+        /**
+         * Copies data from old array to new array.
+         * @param old_array unique pointer of the <b>old</b> array
+         * @param new_array unique pointer of the <b>new</b> array
+         */
+        void _copy(std::unique_ptr<std::shared_ptr<T>[]>& old_array, std::unique_ptr<std::shared_ptr<T>[]>& new_array) {
+            for (size_t i = 0; i < m_size; i++)
+                new_array[i] = old_array[i];
+        }
 
-    short* get(size_t index) const {
-        if (index > size - 1)
-            throw std::out_of_range("Index '" + index + "' is out of bounds! Array size: " + size);
+        [[deprecated]] void _delete(T *array) {
+            delete[] array;
+        }
 
-        return &array[index];
-    }
+    public:
+        /**
+         * @param size Initial size of the array (Default = 5)
+         */
+        explicit DynamicArray(size_t size = INITIAL_SIZE) {
+            m_size = size;
+            m_last_index = 0;
+            m_array = _create_array(m_size);
+        }
 
-    void pushBack(short object) {
-        if (size - 1 == index)
-            _grow(GROW_SIZE);
+        /**
+         * Returns shared pointer of requested element
+         * @param index Element location
+         * @returns Shared pointer of requested element
+         * @throws std::out_of_range When index is out of range
+         */
+        std::shared_ptr<T> get(size_t index) const {
+            if (index > m_last_index)
+                throw std::out_of_range(std::format("Index {} is out of bounds! Current array size is {}", index, m_last_index));
 
-        array[++index] = object;
-    }
+            return m_array[index];
+        }
 
-    void popBack() {
+        /**
+         * Appends element at the end
+         * @param object Element to add
+         */
+        void push_back(std::shared_ptr<T> object) {
+            if (m_size - 1 >= m_last_index)
+                _grow(GROW_SIZE);
 
-    }
+            m_array[++m_last_index] = object;
+        }
 
-    size_t getSize() const {
-        return this->size; 
-    }
-};
+        /**
+         * Removes last element
+         */
+        void pop_back() {
+            m_array[m_last_index] = nullptr;
+            m_last_index--;
+        }
+
+        /**
+         * @return Array size
+         */
+        [[nodiscard]] size_t size() const noexcept {
+            return m_last_index;
+        }
+    };
+}
