@@ -52,7 +52,7 @@ namespace dvm {
             auto empty_cells_count = m_size - 1 - m_last_index;
             if (empty_cells_count <= SHRINK_THRESHOLD)
                 return;
-            
+
             _resize_to(m_last_index + 1 + SHRINK_UNTIL);
         }
 
@@ -128,7 +128,7 @@ namespace dvm {
          */
         explicit DynamicArray(size_t size = INITIAL_SIZE) {
             m_size = size;
-            m_last_index = 0;
+            m_last_index = -1;
             m_array = _create_array(m_size);
         }
 
@@ -202,7 +202,7 @@ namespace dvm {
             _shift_right(index);
             m_array[index] = object;
         }
-        
+
         /**
          * Removes last element
          */
@@ -254,6 +254,44 @@ namespace dvm {
             return m_last_index == 0;
         }
 #pragma endregion "Memory"
+
+        /**
+         * @param comparator Lambda function.
+         * <ul>
+         *  <li>Must return -1 if lhs <  rhs</li>
+         *  <li>Must return  0 if lhs == rhs</li>
+         *  <li>Must return  1 if lhs >  rhs</li>
+         * </ul>
+         * @return Element with min value
+         */
+        std::shared_ptr<T> min( int (*comparator)(std::shared_ptr<T>& lhs, std::shared_ptr<T>& rhs)) {
+            auto min = m_array[0];
+
+            for (size_t i = 1; i < m_last_index; i++)
+                if (comparator(min, m_array[i]) < 0)
+                    min = m_array[i];
+
+            return min;
+        }
+
+        /**
+         * @param comparator Lambda function.
+         * <ul>
+         *  <li>Must return -1 if lhs <  rhs</li>
+         *  <li>Must return  0 if lhs == rhs</li>
+         *  <li>Must return  1 if lhs >  rhs</li>
+         * </ul>
+         * @return Element with max value
+         */
+        std::shared_ptr<T> max( int (*comparator)(std::shared_ptr<T>& lhs, std::shared_ptr<T>& rhs)) {
+            auto max = m_array[0];
+
+            for (size_t i = 1; i < m_last_index; i++)
+                if (comparator(max, m_array[i]) > 0)
+                    max = m_array[i];
+
+            return max;
+        }
     };
 }
 
