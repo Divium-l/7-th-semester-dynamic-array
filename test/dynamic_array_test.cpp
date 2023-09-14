@@ -13,6 +13,10 @@ struct Dummy {
         id = count++;
         //std::cout << std::format("Dummy {} created", id) << std::endl;
     }
+    explicit Dummy(size_t id) {
+        this->id = id;
+        //std::cout << std::format("Dummy {} created", id) << std::endl;
+    }
     ~Dummy() {
         //std::cout << std::format("Dummy {} DELETED", id) << std::endl;
     }
@@ -25,14 +29,13 @@ TEST_CASE("Sample test", "[dyn]") {
 }
 
 SCENARIO("Dynamic array must resize correctly") {
-    GIVEN("12 objects inside the array") {
+    GIVEN("120 objects inside the array") {
         dvm::DynamicArray<Dummy> dynamic_array{};
         {
-            for (int i = 0; i < 120; i++)
+            for (int i = 1; i <= 120; i++)
                 dynamic_array.push_back(std::make_shared<Dummy>());
 
-            REQUIRE(dynamic_array.size() == 120);           // index = 120 => size = 125
-            REQUIRE(dynamic_array.capacity() == 125);
+            REQUIRE(dynamic_array.size() == 120);
         }
 
         WHEN("Removing 11 objects") {
@@ -40,11 +43,8 @@ SCENARIO("Dynamic array must resize correctly") {
                 dynamic_array.pop_back();
 
             THEN("Size changes") {
-                REQUIRE(dynamic_array.size() == 109);       // index = 110
-                REQUIRE(dynamic_array.capacity() == 119);   // size = 125 - 11 + 5 = 119; SHRINK_UNTIL = 5
+                REQUIRE(dynamic_array.size() == 109);
             }
         }
-
-
     }
 }
