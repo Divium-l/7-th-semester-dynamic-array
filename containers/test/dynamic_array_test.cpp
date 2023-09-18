@@ -2,25 +2,11 @@
 // Created by Divium on 09/09/2023.
 //
 #include <catch2/catch_test_macros.hpp>
-#include <dynamic_array.hpp>
 #include <memory>
 #include <iostream>
 
-struct Dummy {
-    inline static size_t count;
-    size_t id;
-    Dummy() {
-        id = count++;
-        //std::cout << std::format("Dummy {} created", id) << std::endl;
-    }
-    explicit Dummy(size_t id) {
-        this->id = id;
-        //std::cout << std::format("Dummy {} created", id) << std::endl;
-    }
-    ~Dummy() {
-        //std::cout << std::format("Dummy {} DELETED", id) << std::endl;
-    }
-};
+#include "../src/dynamic_array.hpp"
+#include "../src/dummy.hpp"
 
 typedef std::shared_ptr<Dummy> spd;
 
@@ -39,7 +25,7 @@ SCENARIO("Dynamic array must resize correctly") {
         }
 
         WHEN("Removing 11 objects") {
-            for (int i = 0; i < 11; i++)
+            for (int i = 1; i <= 11; i++)
                 dynamic_array.pop_back();
 
             THEN("Size changes") {

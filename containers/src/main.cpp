@@ -5,25 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include "dynamic_array.hpp"
-
-struct Dummy {
-    inline static int count;
-    int id;
-    Dummy() {
-        id = count++;
-        std::cout << std::format("Dummy {} created", id) << std::endl;
-    }
-    ~Dummy() {
-        std::cout << std::format("Dummy {} DELETED", id) << std::endl;
-    }
-    friend bool operator< (const Dummy& lhs, const Dummy& rhs) {
-        return lhs.id > rhs.id;
-    }
-
-    friend bool operator> (const Dummy& lhs, const Dummy& rhs) {
-        return lhs.id < rhs.id;
-    }
-};
+#include "dummy.hpp"
 
 int main() {
     auto arr = dvm::DynamicArray<Dummy>();
