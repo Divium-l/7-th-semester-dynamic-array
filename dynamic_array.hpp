@@ -7,6 +7,7 @@
 #include <memory>
 #include <format>
 #include <iostream>
+#include "comparable.hpp"
 
 /*
  * If uncommenting, uncomment at the EOF!!!
@@ -19,7 +20,7 @@ namespace dvm {
     /**
      * @brief Dynamic array implementation using smart pointers
      */
-    template<class T> class DynamicArray {
+    template<dvm::CComparable T> class DynamicArray {
     private:
         static const size_t INITIAL_SIZE = 5;
         static const size_t GROW_SIZE = 5;
@@ -268,7 +269,7 @@ namespace dvm {
             auto min = m_array[0];
 
             for (size_t i = 1; i < m_last_index; i++)
-                if (comparator(min, m_array[i]) < 0)
+                if (comparator(min, m_array[i]) > 0)
                     min = m_array[i];
 
             return min;
@@ -287,7 +288,33 @@ namespace dvm {
             auto max = m_array[0];
 
             for (size_t i = 1; i < m_last_index; i++)
-                if (comparator(max, m_array[i]) > 0)
+                if (comparator(max, m_array[i]) < 0)
+                    max = m_array[i];
+
+            return max;
+        }
+
+        /**
+         * @return Element with min value
+         */
+        std::shared_ptr<T> min() {
+            auto min = m_array[0];
+
+            for (size_t i = 1; i < m_last_index; i++)
+                if (min > m_array[i])
+                    min = m_array[i];
+
+            return min;
+        }
+
+        /**
+         * @return Element with max value
+         */
+        std::shared_ptr<T> max() {
+            auto max = m_array[0];
+
+            for (size_t i = 1; i < m_last_index; i++)
+                if (max < m_array[i])
                     max = m_array[i];
 
             return max;

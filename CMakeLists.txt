@@ -12,4 +12,5 @@ add_subdirectory(test)
 
 add_executable(${EXECUTABLE_NAME}
         dynamic_array.hpp
-        main.cpp)
+        main.cpp
+        comparable.hpp)
