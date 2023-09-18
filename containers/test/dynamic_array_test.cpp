@@ -21,7 +21,7 @@ SCENARIO("Dynamic array must resize correctly") {
             for (int i = 1; i <= 120; i++)
                 dynamic_array.push_back(std::make_shared<Dummy>());
 
-            REQUIRE(dynamic_array.size() == 120);
+            REQUIRE(dynamic_array.size() == 119);
         }
 
         WHEN("Removing 11 objects") {
@@ -29,7 +29,25 @@ SCENARIO("Dynamic array must resize correctly") {
                 dynamic_array.pop_back();
 
             THEN("Size changes") {
-                REQUIRE(dynamic_array.size() == 109);
+                REQUIRE(dynamic_array.size() == 108);
+            }
+        }
+
+        WHEN("Removing 2 objects in the center") {
+            dynamic_array.remove(50);
+            dynamic_array.remove(50);
+
+            THEN("Size changes") {
+                REQUIRE(dynamic_array.size() == 117);
+            }
+        }
+
+        WHEN("Adding 2 objects in the center") {
+            dynamic_array.insert(50, std::make_shared<Dummy>());
+            dynamic_array.insert(50, std::make_shared<Dummy>());
+
+            THEN("Size changes") {
+                REQUIRE(dynamic_array.size() == 121);
             }
         }
     }

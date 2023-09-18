@@ -117,10 +117,6 @@ namespace dvm {
             if (index > m_last_index)
                 throw std::out_of_range(std::format("Index {} is out of bounds! Current array size is {}", index, m_last_index));
         }
-
-        [[deprecated]] void _delete(T *array) {
-            delete[] array;
-        }
 #pragma endregion "Utils"
 
     public:
@@ -196,7 +192,7 @@ namespace dvm {
          * @throws std::out_of_range When index is out of bounds
          */
         [[maybe_unused]] void insert(size_t index, std::shared_ptr<T> object) {
-            _assert_bounds();
+            _assert_bounds(index);
             m_last_index++;
             _try_grow();
 
@@ -208,10 +204,10 @@ namespace dvm {
          * Removes last element
          */
         [[maybe_unused]] void pop_back() {
-            m_array[m_last_index] = std::shared_ptr<T>(nullptr);
-
-            if (m_last_index == 0)
+            if (m_last_index < 0)
                 return;
+
+            m_array[m_last_index] = std::shared_ptr<T>(nullptr);
 
             m_last_index--;
             _try_shrink();
@@ -228,6 +224,7 @@ namespace dvm {
             m_array[index] = nullptr;
 
             _shift_left(index);
+            m_last_index--;
             _try_shrink();
         }
 #pragma endregion "Modifiers"
