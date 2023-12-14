@@ -25,6 +25,7 @@ struct Dummy {
 
     explicit Dummy(int id, bool debug_print = false) {
         this->id = id;
+        count++;
         enable_print = debug_print;
         if (enable_print)
             std::cout << std::format("Dummy {} created", id) << std::endl;
@@ -36,10 +37,10 @@ struct Dummy {
     }
 
     friend bool operator< (const Dummy& lhs, const Dummy& rhs) {
-        return lhs.id > rhs.id;
+        return lhs.id < rhs.id;
     }
 
     friend bool operator> (const Dummy& lhs, const Dummy& rhs) {
-        return lhs.id < rhs.id;
+        return lhs.id > rhs.id;
     }
 };

@@ -234,7 +234,7 @@ namespace dvm {
          * @return Number of elements
          */
         [[maybe_unused]] [[nodiscard]] size_t size() const noexcept {
-            return m_last_index;
+            return m_last_index + 1;
         }
 
         /**
@@ -249,14 +249,14 @@ namespace dvm {
          * @return Boolean
          */
         [[maybe_unused]] [[nodiscard]] bool is_empty() const noexcept {
-            return m_last_index == 0;
+            return m_last_index == -1;
         }
 #pragma endregion "Memory"
 
         /**
          * @param comparator Lambda function.
          * <ul>
-         *  <li>Must return -1 if lhs <  rhs</li>
+         *  <li>Must return -1 if lhs \<  rhs</li>
          *  <li>Must return  0 if lhs == rhs</li>
          *  <li>Must return  1 if lhs >  rhs</li>
          * </ul>
@@ -265,7 +265,7 @@ namespace dvm {
         std::shared_ptr<T> min( int (*comparator)(std::shared_ptr<T>& lhs, std::shared_ptr<T>& rhs)) {
             auto min = m_array[0];
 
-            for (size_t i = 1; i < m_last_index; i++)
+            for (size_t i = 1; i <= m_last_index; i++)
                 if (comparator(min, m_array[i]) > 0)
                     min = m_array[i];
 
@@ -275,7 +275,7 @@ namespace dvm {
         /**
          * @param comparator Lambda function.
          * <ul>
-         *  <li>Must return -1 if lhs <  rhs</li>
+         *  <li>Must return -1 if lhs \<  rhs</li>
          *  <li>Must return  0 if lhs == rhs</li>
          *  <li>Must return  1 if lhs >  rhs</li>
          * </ul>
@@ -296,9 +296,8 @@ namespace dvm {
          */
         std::shared_ptr<T> min() {
             auto min = m_array[0];
-
-            for (size_t i = 1; i < m_last_index; i++)
-                if (min > m_array[i])
+            for (size_t i = 1; i <= m_last_index; i++)
+                if (*min.get() > *m_array[i].get())
                     min = m_array[i];
 
             return min;
@@ -310,8 +309,8 @@ namespace dvm {
         std::shared_ptr<T> max() {
             auto max = m_array[0];
 
-            for (size_t i = 1; i < m_last_index; i++)
-                if (max < m_array[i])
+            for (size_t i = 1; i <= m_last_index; i++)
+                if (*max.get() < *m_array[i].get())
                     max = m_array[i];
 
             return max;

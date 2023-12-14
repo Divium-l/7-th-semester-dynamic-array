@@ -1,5 +1,5 @@
 add_executable(${EXECUTABLE_NAME}
         dynamic_array.hpp
         comparable.hpp
-        dummy.hpp
+        ../test/dummy.hpp
         main.cpp)
