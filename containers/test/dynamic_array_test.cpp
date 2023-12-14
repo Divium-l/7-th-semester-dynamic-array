@@ -6,7 +6,7 @@
 #include <iostream>
 
 #include "../src/dynamic_array.hpp"
-#include "../src/dummy.hpp"
+#include "dummy.hpp"
 
 typedef std::shared_ptr<Dummy> spd;
 

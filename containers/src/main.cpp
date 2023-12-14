@@ -5,7 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include "dynamic_array.hpp"
-#include "dummy.hpp"
+#include "test/dummy.hpp"
 
 int main() {
     auto arr = dvm::DynamicArray<Dummy>();
